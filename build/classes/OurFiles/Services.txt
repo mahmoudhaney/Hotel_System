@@ -1,0 +1,4 @@
+1 SPA 100.0 Available
+2 Gym 70.0 Available
+3 Laundary 20.0 Available
+4 Shopping 10.0 Available
