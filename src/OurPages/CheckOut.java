@@ -333,7 +333,11 @@ public class CheckOut extends javax.swing.JFrame {
         FileHandler.deleteGuest(Integer.parseInt(roomNumber));
         
         //=====To Print A Pdf with the details of the leaving guest=======
+<<<<<<< HEAD
         String path = "D:\\Netbeans_Projects\\Hotel_System\\src\\Bills\\";
+=======
+        String path = "D:\\Netbeans_Projects\\Hotel_System\\src\\Bills_Pdfs";
+>>>>>>> 4b6485eb9008f5038c50d618e3039e437eca45c1
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
         
         try{
