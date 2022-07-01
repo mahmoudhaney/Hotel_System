@@ -316,7 +316,7 @@ public class Services extends javax.swing.JFrame {
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
         ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File("D:\\Netbeans_Projects\\Hotel Reservation System\\src\\OurFiles\\Services.txt");
+        File file = new File(FileHandler.getServicePath());
         String info = "";       
         try{
             Scanner in = new Scanner(file);

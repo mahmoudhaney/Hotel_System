@@ -315,7 +315,7 @@ public class Rooms extends javax.swing.JFrame {
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
         ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File("D:\\Netbeans_Projects\\Hotel Reservation System\\src\\OurFiles\\Rooms.txt");
+        File file = new File(FileHandler.getRoomPath());
         String info = "";       
         try{
             Scanner in = new Scanner(file);
