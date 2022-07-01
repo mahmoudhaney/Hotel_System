@@ -274,26 +274,35 @@ public class Services extends javax.swing.JFrame {
         String[] ourDate, checkedData;
         checkedData = null;
         ourDate = FileHandler.getService();
-        boolean flag = false;
-        for (int i = 0; i < ourDate.length; i++) {
-            checkedData = ourDate[i].split("\\s");
-            if (checkedData[0].equals(serviceNo)) {
-                flag = true;
-                break;
-            } else {
-                continue;
-            }
-        }
-        if (flag) {
-            JOptionPane.showMessageDialog(null, "This Service Number Is Already Exist");
-        }
-        else{
+        if (checkedId == Integer.parseInt(serviceNo))
+        {
             FileHandler.updateService(checkedId, Integer.parseInt(serviceNo), serviceName, Float.parseFloat(price), serviceStatus);
             JOptionPane.showMessageDialog(null, "Sevice Updated");
             setVisible(false);
             new Services().setVisible(true);
         }
-              
+        else
+        {
+            boolean flag = false;
+            for (int i = 0; i < ourDate.length; i++) {
+                checkedData = ourDate[i].split("\\s");
+                if (checkedData[0].equals(serviceNo)) {
+                    flag = true;
+                    break;
+                } else {
+                    continue;
+                }
+            }
+            if (flag) {
+                JOptionPane.showMessageDialog(null, "This Service Number Is Already Exist");
+            }
+            else{
+                FileHandler.updateService(checkedId, Integer.parseInt(serviceNo), serviceName, Float.parseFloat(price), serviceStatus);
+                JOptionPane.showMessageDialog(null, "Sevice Updated");
+                setVisible(false);
+                new Services().setVisible(true);
+            }
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -316,7 +325,7 @@ public class Services extends javax.swing.JFrame {
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
         ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File("D:\\Netbeans_Projects\\Hotel Reservation System\\src\\OurFiles\\Services.txt");
+        File file = new File(FileHandler.getServicePath());
         String info = "";       
         try{
             Scanner in = new Scanner(file);

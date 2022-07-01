@@ -293,24 +293,34 @@ public class Employees extends javax.swing.JFrame {
         String[] ourDate, checkedData;
         checkedData = null;
         ourDate = FileHandler.getEmployee();
-        boolean flag = false;
-        for (int i = 0; i < ourDate.length; i++) {
-            checkedData = ourDate[i].split("\\s");
-            if (checkedData[0].equals(id)) {
-                flag = true;
-                break;
-            } else {
-                continue;
-            }
-        }
-        if (flag) {
-            JOptionPane.showMessageDialog(null, "This Employee ID Is Already Exist");
-        }
-        else{
+        if (checkedId == Integer.parseInt(id))
+        {
             FileHandler.updateEmployee(checkedId, Integer.parseInt(id), name, email, department, Double.parseDouble(salary) );
             JOptionPane.showMessageDialog(null, "Employee Updated");
             setVisible(false);
             new Employees().setVisible(true);
+        }
+        else
+        {
+            boolean flag = false;
+            for (int i = 0; i < ourDate.length; i++) {
+                checkedData = ourDate[i].split("\\s");
+                if (checkedData[0].equals(id)) {
+                    flag = true;
+                    break;
+                } else {
+                    continue;
+                }
+            }
+            if (flag) {
+                JOptionPane.showMessageDialog(null, "This Employee ID Is Already Exist");
+            }
+            else{
+                FileHandler.updateEmployee(checkedId, Integer.parseInt(id), name, email, department, Double.parseDouble(salary) );
+                JOptionPane.showMessageDialog(null, "Employee Updated");
+                setVisible(false);
+                new Employees().setVisible(true);
+            }
         }
         
         
@@ -321,7 +331,7 @@ public class Employees extends javax.swing.JFrame {
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
         ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File("D:\\Netbeans_Projects\\Hotel Reservation System\\src\\OurFiles\\Employees.txt");
+        File file = new File(FileHandler.getEmployeePath());
         String info = "";       
         try{
             Scanner in = new Scanner(file);

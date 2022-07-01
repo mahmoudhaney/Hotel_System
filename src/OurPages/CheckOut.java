@@ -333,7 +333,7 @@ public class CheckOut extends javax.swing.JFrame {
         FileHandler.deleteGuest(Integer.parseInt(roomNumber));
         
         //=====To Print A Pdf with the details of the leaving guest=======
-        String path = "E:\\Hotel_Bills\\";
+        String path = "D:\\Netbeans_Projects\\Hotel_System\\src\\Bills\\";
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
         
         try{
@@ -358,18 +358,18 @@ public class CheckOut extends javax.swing.JFrame {
             tb1.addCell("Total Price Paid:  " + totalAmount);
             doc.add(tb1);
             doc.add(paragraph2);
-            Paragraph paragraph5 = new Paragraph("                             Thank you, We're Hoping visiting us again");
+            Paragraph paragraph5 = new Paragraph("                                      Thank you, We're Hoping visiting us again");
             doc.add(paragraph5);
             doc.close();
             //To ask the user
             int a = JOptionPane.showConfirmDialog(null, "Do you want to print this Bill?","Select",JOptionPane.YES_NO_OPTION);
             if(a == 0){
                 try{
-                    if((new File("E:\\Hotel_Bills\\" + name + ".pdf")).exists())
+                    if((new File(path + name + ".pdf")).exists())
                     {
                         Process p = Runtime
                                 .getRuntime()
-                                .exec("rundll32 url.dll,FileProtocolHandler E:\\Hotel_Bills\\" + name + ".pdf");
+                                .exec("rundll32 url.dll,FileProtocolHandler " + path + name + ".pdf");
                     }
                     else
                         System.out.println("The File is not Exist");
