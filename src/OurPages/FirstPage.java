@@ -1,7 +1,7 @@
 package OurPages;
+import OurClasses.Receptionist;
 import java.awt.Color;
 import javax.swing.JOptionPane;
-import OurFiles.*;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -245,17 +245,19 @@ public class FirstPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3MouseExited
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String name = jTextField1.getText();
-        String email = jTextField2.getText();
-        String password = jPasswordField1.getText();
-        String Address = jTextField3.getText();
-        
-        if (name.equals("") || email.equals("") || password.equals("") || Address.equals("")){
+        //Add new Receptionist
+        Receptionist receptionist = new Receptionist();
+        receptionist.setName(jTextField1.getText());
+        receptionist.setEmail(jTextField2.getText());
+        receptionist.setPassword(jPasswordField1.getText());
+        receptionist.setAddress(jTextField3.getText());
+
+        if (receptionist.getName().equals("") || receptionist.getEmail().equals("") || receptionist.getPassword().equals("") || receptionist.getAddress().equals("")){
             JOptionPane.showMessageDialog(null, "All Fields Are Required");
         }
             
         else{          
-            FileHandler.Add(name, email, password, Address);
+            Receptionist.add(receptionist.getName(), receptionist.getEmail(), receptionist.getPassword(), receptionist.getAddress());
             setVisible(false);
             new FirstPage().setVisible(true);
         }      

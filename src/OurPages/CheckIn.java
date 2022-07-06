@@ -1,5 +1,6 @@
 package OurPages;
-import OurFiles.FileHandler;
+import OurClasses.Guest;
+import OurClasses.Room;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,21 +28,21 @@ public class CheckIn extends javax.swing.JFrame {
         Calendar cal = Calendar.getInstance();
         jTextField4.setText(myformat.format(cal.getTime()));
     }
-    String roomType;
-    String roomNo;
-    String price;
+    
+    Room room = new Room();
     
     public void roomDetails(){
         jComboBox3.removeAllItems();
         jTextField5.setText("");
-        roomType = (String) jComboBox2.getSelectedItem();
+        room.setType(jComboBox2.getSelectedItem().toString());
+        //roomType = (String) jComboBox2.getSelectedItem();
         try{
             String[] ourDate, checkedData;
-            checkedData = null; ourDate = FileHandler.getRoom();
+            checkedData = null; ourDate = Room.get();
             for(int i=0;i<ourDate.length;i++)
             {
                 checkedData = ourDate[i].split("\\s");
-                if(checkedData[1].equals(roomType) && checkedData[3].equals("Not-Booked")){
+                if(checkedData[1].equals(room.getType()) && checkedData[3].equals("Not-Booked")){
                     jComboBox3.addItem(checkedData[0]);
                 }
             }
@@ -223,32 +224,32 @@ public class CheckIn extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Add guest OR Book room
-        String name = jTextField1.getText();
-        String mobile = jTextField2.getText();
-        String gender = jComboBox1.getSelectedItem().toString();
-        String id = jTextField3.getText();
-        String checkInDate = jTextField4.getText();
-        String roomType = jComboBox2.getSelectedItem().toString();
-        String roomNo = jComboBox3.getSelectedItem().toString();
-        String price = jTextField5.getText();
+        Guest guest = new Guest();
+        guest.setName(jTextField1.getText());
+        guest.setMobile(jTextField2.getText());
+        guest.setGender(jComboBox1.getSelectedItem().toString());
+        guest.setIdproof(jTextField3.getText());
+        guest.setCheckInDate(jTextField4.getText());
+        room.setNumber(jComboBox3.getSelectedItem().toString());
+        room.setPrice(jTextField5.getText());
         
-        if( name.equals("") || mobile.equals("") || gender.equals("") || id.equals("") || checkInDate.equals("") || roomType.equals("") || roomNo.equals("") || price.equals("")){
+        if( guest.getName().equals("") || guest.getMobile().equals("") || guest.getGender().equals("") || guest.getIdproof().equals("") || guest.getCheckInDate().equals("") || room.getType().equals("") || room.getNumber().equals("") || room.getPrice().equals("")){
             JOptionPane.showMessageDialog(null, "All Fields Are Required");
         }
         else{
-            if(!price.equals("")){
+            if(!room.getPrice().equals("")){
                 String[] ourDate, checkedData;
-                checkedData = null; ourDate = FileHandler.getRoom();
+                checkedData = null; ourDate = Room.get();
                 for(int i=0;i<ourDate.length;i++)
                 {
                     checkedData = ourDate[i].split("\\s");
-                    if(checkedData[0].equals(roomNo)){//ggggggg
+                    if(checkedData[0].equals(room.getNumber())){
                         
-                        FileHandler.updateRoom(Integer.parseInt(roomNo), Integer.parseInt(roomNo), roomType, Float.parseFloat(price), "Booked");
+                        Room.update(Integer.parseInt(room.getNumber()), Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), "Booked");
                         //checkedData[3] = "Booked";//????????????????????????????????????????
                     }
                 }
-                FileHandler.Add(name, mobile, gender, id, checkInDate, roomType, Integer.parseInt(roomNo), Float.parseFloat(price));
+                Guest.add(guest.getName(), guest.getMobile(), guest.getGender(), guest.getIdproof(), guest.getCheckInDate(), room.getType(), Integer.parseInt(room.getNumber()), Float.parseFloat(room.getPrice()));
                 setVisible(false);
                 new CheckIn().setVisible(true);
             }           
@@ -289,14 +290,14 @@ public class CheckIn extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBox2ActionPerformed
 
     private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
-        roomNo = (String) jComboBox3.getSelectedItem();
+        room.setNumber((String) jComboBox3.getSelectedItem());
         try{
             String[] ourDate, checkedData;
-            checkedData = null; ourDate = FileHandler.getRoom();
+            checkedData = null; ourDate = Room.get();
             for(int i=0;i<ourDate.length;i++)
             {
                 checkedData = ourDate[i].split("\\s");
-                if(checkedData[0].equals(roomNo)){
+                if(checkedData[0].equals(room.getNumber())){
                     jTextField5.setText(checkedData[2]);
                 }
             }

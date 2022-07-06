@@ -1,5 +1,5 @@
 package OurPages;
-import OurFiles.FileHandler;
+import OurClasses.Room;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,7 +18,7 @@ public class Rooms extends javax.swing.JFrame {
         initComponents();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
         String[] ourDate, checkedData;
-        checkedData = null; ourDate = FileHandler.getRoom();
+        checkedData = null; ourDate = Room.get();
         for(int i=0;i<ourDate.length;i++)
         {
             checkedData = ourDate[i].split("\\s");                    
@@ -221,24 +221,24 @@ public class Rooms extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         //Add
-        String roomNo = jTextField1.getText();
-        String roomType = jComboBox1.getSelectedItem().toString();
-        String price = jTextField2.getText();
-        String roomStatus = jComboBox2.getSelectedItem().toString();
+        Room room = new Room();
+        room.setNumber(jTextField1.getText());
+        room.setType(jComboBox1.getSelectedItem().toString());
+        room.setStatus(jComboBox2.getSelectedItem().toString());
+        room.setPrice(jTextField2.getText());
         
-        
-            if( roomNo.equals("") || roomType.equals("") || price.equals("") || roomStatus.equals("")){
+            if( room.getNumber().equals("") || room.getType().equals("") || room.getPrice().equals("") || room.getStatus().equals("")){
                 JOptionPane.showMessageDialog(null, "All Fields Are Required");
             }
             
             else{
                 String[] ourDate, checkedData;
-                checkedData = null; ourDate = FileHandler.getRoom();
+                checkedData = null; ourDate = Room.get();
                 boolean flag = false;
                 for(int i=0;i<ourDate.length;i++)
                 {
                     checkedData = ourDate[i].split("\\s");                    
-                    if(checkedData[0].equals(roomNo)){
+                    if(checkedData[0].equals(room.getNumber())){
                         flag = true;
                         break;
                     }
@@ -250,7 +250,7 @@ public class Rooms extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "This Room Number Is Already Exist");
                 }
                 else{
-                    FileHandler.Add(Integer.parseInt(roomNo), roomType, Float.parseFloat(price), roomStatus);
+                    Room.add(Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), room.getStatus());
                     setVisible(false);
                     new Rooms().setVisible(true);
                 }
@@ -262,20 +262,21 @@ public class Rooms extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // Edit
-        String roomNo = jTextField1.getText();
-        String roomType = jComboBox1.getSelectedItem().toString();
-        String price = jTextField2.getText();
-        String roomStatus = jComboBox2.getSelectedItem().toString();
+        Room room = new Room();
+        room.setNumber(jTextField1.getText());
+        room.setType(jComboBox1.getSelectedItem().toString());
+        room.setStatus(jComboBox2.getSelectedItem().toString());
+        room.setPrice(jTextField2.getText());
         
         int selectedRow = jTable1.getSelectedRow();
         int checkedId = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
         
         String[] ourDate, checkedData;
         checkedData = null;
-        ourDate = FileHandler.getRoom();
-        if (checkedId == Integer.parseInt(roomNo))
+        ourDate = Room.get();
+        if (checkedId == Integer.parseInt(room.getNumber()))
         {
-            FileHandler.updateRoom(checkedId, Integer.parseInt(roomNo), roomType, Float.parseFloat(price), roomStatus);
+            Room.update(checkedId, Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), room.getStatus());
             JOptionPane.showMessageDialog(null, "Room Updated");
             setVisible(false);
             new Rooms().setVisible(true);
@@ -285,7 +286,7 @@ public class Rooms extends javax.swing.JFrame {
             boolean flag = false;
             for (int i = 0; i < ourDate.length; i++) {
                 checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(roomNo)) {
+                if (checkedData[0].equals(room.getNumber())) {
                     flag = true;
                     break;
                 } else {
@@ -296,7 +297,7 @@ public class Rooms extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "This Room Number Is Already Exist");
             }
             else{
-                FileHandler.updateRoom(checkedId, Integer.parseInt(roomNo), roomType, Float.parseFloat(price), roomStatus);
+                Room.update(checkedId, Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), room.getStatus());
                 JOptionPane.showMessageDialog(null, "Room Updated");
                 setVisible(false);
                 new Rooms().setVisible(true);
@@ -309,7 +310,7 @@ public class Rooms extends javax.swing.JFrame {
         try{
             int selectedRow = jTable1.getSelectedRow();
             int id = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
-            FileHandler.deleteRoom(id);
+            Room.delete(id);
             JOptionPane.showMessageDialog(null, "Room Deleted");
             setVisible(false);
             new Rooms().setVisible(true);
@@ -324,7 +325,7 @@ public class Rooms extends javax.swing.JFrame {
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
         ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File(FileHandler.getRoomPath());
+        File file = new File(Room.getRoomPath());
         String info = "";       
         try{
             Scanner in = new Scanner(file);

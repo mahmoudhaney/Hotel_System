@@ -1,10 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package OurPages;
 
-import OurFiles.FileHandler;
+import OurClasses.Service;
 import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +22,7 @@ public class Services extends javax.swing.JFrame {
         initComponents();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
         String[] ourDate, checkedData;
-        checkedData = null; ourDate = FileHandler.getService();
+        checkedData = null; ourDate = Service.get();
         for(int i=0;i<ourDate.length;i++)
         {
             checkedData = ourDate[i].split("\\s");                    
@@ -228,22 +224,24 @@ public class Services extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4MouseExited
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        String serviceNo = jTextField3.getText();
-        String serviceName = jTextField1.getText();
-        String price = jTextField2.getText();
-        String serviceStatus = jComboBox1.getSelectedItem().toString();
-        
-        if(serviceNo.equals("") || serviceName.equals("") || price.equals("") || serviceStatus.equals("")){
+        //Add new Service
+        Service service = new Service();
+        service.setNumber(jTextField3.getText());
+        service.setName(jTextField1.getText());
+        service.setPrice(jTextField2.getText());
+        service.setStatus(jComboBox1.getSelectedItem().toString());
+
+        if(service.getNumber().equals("") || service.getName().equals("") || service.getPrice().equals("") || service.getStatus().equals("")){
             JOptionPane.showMessageDialog(null, "All Fields Are Required");
         }
         else{
             String[] ourDate, checkedData;
             checkedData = null;
-            ourDate = FileHandler.getService();
+            ourDate = Service.get();
             boolean flag = false;
             for (int i = 0; i < ourDate.length; i++) {
                 checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(serviceNo)) {
+                if (checkedData[0].equals(service.getNumber())) {
                     flag = true;
                     break;
                 } else {
@@ -254,7 +252,7 @@ public class Services extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "This Service Number Is Already Exist");
             }
             else{
-                FileHandler.AddService(Integer.parseInt(serviceNo), serviceName, Float.parseFloat(price), serviceStatus);
+                Service.add(Integer.parseInt(service.getNumber()), service.getName(), Float.parseFloat(service.getPrice()), service.getStatus());
             setVisible(false);
             new Services().setVisible(true);
             }            
@@ -263,20 +261,21 @@ public class Services extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // Update
-        String serviceNo = jTextField3.getText();
-        String serviceName = jTextField1.getText();
-        String price = jTextField2.getText();
-        String serviceStatus = jComboBox1.getSelectedItem().toString();
+        Service service = new Service();
+        service.setNumber(jTextField3.getText());
+        service.setName(jTextField1.getText());
+        service.setPrice(jTextField2.getText());
+        service.setStatus(jComboBox1.getSelectedItem().toString());
         
         int selectedRow = jTable1.getSelectedRow();
         int checkedId = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
         
         String[] ourDate, checkedData;
         checkedData = null;
-        ourDate = FileHandler.getService();
-        if (checkedId == Integer.parseInt(serviceNo))
+        ourDate = Service.get();
+        if (checkedId == Integer.parseInt(service.getNumber()))
         {
-            FileHandler.updateService(checkedId, Integer.parseInt(serviceNo), serviceName, Float.parseFloat(price), serviceStatus);
+            Service.update(checkedId, Integer.parseInt(service.getNumber()), service.getName(), Float.parseFloat(service.getPrice()), service.getStatus());
             JOptionPane.showMessageDialog(null, "Sevice Updated");
             setVisible(false);
             new Services().setVisible(true);
@@ -286,7 +285,7 @@ public class Services extends javax.swing.JFrame {
             boolean flag = false;
             for (int i = 0; i < ourDate.length; i++) {
                 checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(serviceNo)) {
+                if (checkedData[0].equals(service.getNumber())) {
                     flag = true;
                     break;
                 } else {
@@ -297,7 +296,7 @@ public class Services extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "This Service Number Is Already Exist");
             }
             else{
-                FileHandler.updateService(checkedId, Integer.parseInt(serviceNo), serviceName, Float.parseFloat(price), serviceStatus);
+                Service.update(checkedId, Integer.parseInt(service.getNumber()), service.getName(), Float.parseFloat(service.getPrice()), service.getStatus());
                 JOptionPane.showMessageDialog(null, "Sevice Updated");
                 setVisible(false);
                 new Services().setVisible(true);
@@ -310,7 +309,7 @@ public class Services extends javax.swing.JFrame {
         try{
             int selectedRow = jTable1.getSelectedRow();
             int id = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
-            FileHandler.deleteService(id);
+            Service.delete(id);
             JOptionPane.showMessageDialog(null, "Service Deleted");
             setVisible(false);
             new Services().setVisible(true);
@@ -325,7 +324,7 @@ public class Services extends javax.swing.JFrame {
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
         ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File(FileHandler.getServicePath());
+        File file = new File(Service.getServicePath());
         String info = "";       
         try{
             Scanner in = new Scanner(file);

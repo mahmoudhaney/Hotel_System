@@ -1,5 +1,6 @@
 package OurPages;
-import OurFiles.FileHandler;
+import OurClasses.Guest;
+import OurClasses.Room;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -11,25 +12,13 @@ import java.util.Calendar;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author Mahmoud Haney
- */
 public class CheckOut extends javax.swing.JFrame {
 
-    /**
-     * Creates new form CheckOut
-     */
     public CheckOut() {
         initComponents();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
         String[] ourDate, checkedData;
-        checkedData = null; ourDate = FileHandler.getGuest();
+        checkedData = null; ourDate = Guest.get();
         for(int i=0;i<ourDate.length;i++)
         {
             checkedData = ourDate[i].split("\\s");                    
@@ -262,14 +251,14 @@ public class CheckOut extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4MouseExited
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        String roomNo = jTextField1.getText();
+        String checkoutRoomNumber = jTextField1.getText();
         try{
             String[] ourDate, checkedData;
-            checkedData = null; ourDate = FileHandler.getGuest();
+            checkedData = null; ourDate = Guest.get();
             for(int i=0;i<ourDate.length;i++)
             {
                 checkedData = ourDate[i].split("\\s");
-                if(checkedData[6].equals(roomNo)){
+                if(checkedData[6].equals(checkoutRoomNumber)){
                     jTextField1.setEditable(false);
                     //To fill Name, price, and check-in date
                     jTextField2.setText(checkedData[0]);
@@ -321,23 +310,19 @@ public class CheckOut extends javax.swing.JFrame {
         
         //To change the status of the room to Not Booked anymore
         String[] ourDate, checkedData;
-        checkedData = null; ourDate = FileHandler.getRoom();
+        checkedData = null; ourDate = Room.get();
         for(int i=0;i<ourDate.length;i++)
         {
             checkedData = ourDate[i].split("\\s");
             if(checkedData[0].equals(roomNumber)){//ggggggg
-                FileHandler.updateRoom(Integer.parseInt(roomNumber), Integer.parseInt(roomNumber), roomType, Float.parseFloat(price), "Not-Booked");
+                Room.update(Integer.parseInt(roomNumber), Integer.parseInt(roomNumber), roomType, Float.parseFloat(price), "Not-Booked");
             }
         }
         
-        FileHandler.deleteGuest(Integer.parseInt(roomNumber));
+        Guest.delete(Integer.parseInt(roomNumber));
         
         //=====To Print A Pdf with the details of the leaving guest=======
-<<<<<<< HEAD
-        String path = "D:\\Netbeans_Projects\\Hotel_System\\src\\Bills\\";
-=======
-        String path = "D:\\Netbeans_Projects\\Hotel_System\\src\\Bills_Pdfs";
->>>>>>> 4b6485eb9008f5038c50d618e3039e437eca45c1
+        final String path = "D:\\Netbeans_Projects\\Hotel_System\\src\\Bills\\";
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
         
         try{

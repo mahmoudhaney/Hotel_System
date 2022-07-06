@@ -1,17 +1,8 @@
 package OurPages;
-import OurFiles.FileHandler;
+import OurClasses.Receptionist;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author Mahmoud Haney
- */
 public class Login extends javax.swing.JFrame {
 
     /**
@@ -218,22 +209,24 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1MouseExited
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        String email = jTextField1.getText();
-        String password = jPasswordField1.getText();
+        Receptionist receptionist = new Receptionist();
+        receptionist.setEmail(jTextField1.getText());
+        receptionist.setPassword(jPasswordField1.getText());
+        
         int check = 0;
-        if (email.equals("") || password.equals("")){
+        if (receptionist.getEmail().equals("") || receptionist.getPassword().equals("")){
             check = 1;
             JOptionPane.showMessageDialog(null, "Email and Password Are Required");
         }
         else{
             try{
                 String[] ourDate, checkedData;
-                checkedData = null; ourDate = FileHandler.getLogin();
+                checkedData = null; ourDate = Receptionist.get();
                 boolean flag = false;
                 for(int i=0;i<ourDate.length;i++)
                 {
                     checkedData = ourDate[i].split("\\s");                    
-                    if(checkedData[2].equals(email) && checkedData[3].equals(password)){
+                    if(checkedData[2].equals(receptionist.getEmail()) && checkedData[3].equals(receptionist.getPassword())){
                         flag = true;
                         break;
                     }

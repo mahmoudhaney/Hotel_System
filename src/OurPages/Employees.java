@@ -1,6 +1,6 @@
 package OurPages;
+import OurClasses.Employee;
 import java.awt.Color;
-import OurFiles.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -17,7 +17,7 @@ public class Employees extends javax.swing.JFrame {
         initComponents();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
         String[] ourDate, checkedData;
-        checkedData = null; ourDate = FileHandler.getEmployee();
+        checkedData = null; ourDate = Employee.get();
         for(int i=0;i<ourDate.length;i++)
         {
             checkedData = ourDate[i].split("\\s");                    
@@ -229,24 +229,25 @@ public class Employees extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4MouseExited
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // Add
-        String id = jTextField1.getText();
-        String name = jTextField2.getText();
-        String email = jTextField3.getText();
-        String department = jComboBox1.getSelectedItem().toString();
-        String salary = jTextField4.getText();
+        // Add new employee
+        Employee employee = new Employee();
+        employee.setId(jTextField1.getText());
+        employee.setName(jTextField2.getText());
+        employee.setEmail(jTextField3.getText());
+        employee.setSalary(jTextField4.getText());
+        employee.setDepartment(jComboBox1.getSelectedItem().toString());
         
-        if( id.equals("") || name.equals("") || email.equals("") || department.equals("") || salary.equals("")){
+        if( employee.getId().equals("") || employee.getName().equals("") || employee.getEmail().equals("") || employee.getDepartment().equals("") || employee.getSalary().equals("")){
             JOptionPane.showMessageDialog(null, "All Fields Are Required");
         }
         else{
             String[] ourDate, checkedData;
             checkedData = null;
-            ourDate = FileHandler.getEmployee();
+            ourDate = Employee.get();
             boolean flag = false;
             for (int i = 0; i < ourDate.length; i++) {
                 checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(id)) {
+                if (checkedData[0].equals(employee.getId())) {
                     flag = true;
                     break;
                 } else {
@@ -257,7 +258,7 @@ public class Employees extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "This Employee ID Is Already Exist");
             }
             else{
-                FileHandler.Add(Integer.parseInt(id), name, email, department, Double.parseDouble(salary));
+                Employee.add(Integer.parseInt(employee.getId()), employee.getName(), employee.getEmail(), employee.getDepartment(), Double.parseDouble(employee.getSalary()));
                 setVisible(false);
                 new Employees().setVisible(true);
             }
@@ -266,10 +267,11 @@ public class Employees extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        //Delete Employee
         try{
             int selectedRow = jTable1.getSelectedRow();
             int id = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
-            FileHandler.deleteEmployee(id);
+            Employee.delete(id);
             JOptionPane.showMessageDialog(null, "Employee Deleted");
             setVisible(false);
             new Employees().setVisible(true);
@@ -280,32 +282,35 @@ public class Employees extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // Update
-        String id = jTextField1.getText();
-        String name = jTextField2.getText();
-        String email = jTextField3.getText();
-        String department = jComboBox1.getSelectedItem().toString();
-        String salary = jTextField4.getText();
+        // Update employee
+        Employee employee = new Employee();
+        employee.setId(jTextField1.getText());
+        employee.setName(jTextField2.getText());
+        employee.setEmail(jTextField3.getText());
+        employee.setSalary(jTextField4.getText());
+        employee.setDepartment(jComboBox1.getSelectedItem().toString());
         
         int selectedRow = jTable1.getSelectedRow();
         int checkedId = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
         
         String[] ourDate, checkedData;
         checkedData = null;
-        ourDate = FileHandler.getEmployee();
-        if (checkedId == Integer.parseInt(id))
+        ourDate = Employee.get();
+        // To make the id without any changes
+        if (checkedId == Integer.parseInt(employee.getId()))
         {
-            FileHandler.updateEmployee(checkedId, Integer.parseInt(id), name, email, department, Double.parseDouble(salary) );
+            Employee.update(checkedId, Integer.parseInt(employee.getId()), employee.getName(), employee.getEmail(), employee.getDepartment(), Double.parseDouble(employee.getSalary()) );
             JOptionPane.showMessageDialog(null, "Employee Updated");
             setVisible(false);
             new Employees().setVisible(true);
         }
         else
         {
+            //To check if the new id exsit or not
             boolean flag = false;
             for (int i = 0; i < ourDate.length; i++) {
                 checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(id)) {
+                if (checkedData[0].equals(employee.getId())) {
                     flag = true;
                     break;
                 } else {
@@ -316,7 +321,7 @@ public class Employees extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "This Employee ID Is Already Exist");
             }
             else{
-                FileHandler.updateEmployee(checkedId, Integer.parseInt(id), name, email, department, Double.parseDouble(salary) );
+                Employee.update(checkedId, Integer.parseInt(employee.getId()), employee.getName(), employee.getEmail(), employee.getDepartment(), Double.parseDouble(employee.getSalary()) );
                 JOptionPane.showMessageDialog(null, "Employee Updated");
                 setVisible(false);
                 new Employees().setVisible(true);
@@ -331,7 +336,7 @@ public class Employees extends javax.swing.JFrame {
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
         ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File(FileHandler.getEmployeePath());
+        File file = new File(Employee.getEmployeePath());
         String info = "";       
         try{
             Scanner in = new Scanner(file);
