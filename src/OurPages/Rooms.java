@@ -1,8 +1,9 @@
 package OurPages;
+import OurClasses.Employee;
 import OurClasses.Room;
 import java.awt.Color;
 import java.io.File;
-import java.io.FileWriter;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
@@ -16,14 +17,17 @@ public class Rooms extends javax.swing.JFrame {
      */
     public Rooms() {
         initComponents();
+        ResultSet result = Room.get();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
-        String[] ourDate, checkedData;
-        checkedData = null; ourDate = Room.get();
-        for(int i=0;i<ourDate.length;i++)
-        {
-            checkedData = ourDate[i].split("\\s");                    
-            Object row[] = {checkedData[0], checkedData[1], checkedData[2], checkedData[3]};
-            model.addRow(row);
+        try{
+            while(result.next())
+            {
+                model.addRow(new Object[]{result.getString(1),result.getString(2),result.getString(3),result.getString(4)});
+            }
+            result.close();
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
         }
     }
 
@@ -220,48 +224,27 @@ public class Rooms extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4MouseExited
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        //Add
+        //Add New Room
         Room room = new Room();
         room.setNumber(jTextField1.getText());
         room.setType(jComboBox1.getSelectedItem().toString());
         room.setStatus(jComboBox2.getSelectedItem().toString());
         room.setPrice(jTextField2.getText());
         
-            if( room.getNumber().equals("") || room.getType().equals("") || room.getPrice().equals("") || room.getStatus().equals("")){
-                JOptionPane.showMessageDialog(null, "All Fields Are Required");
-            }
-            
-            else{
-                String[] ourDate, checkedData;
-                checkedData = null; ourDate = Room.get();
-                boolean flag = false;
-                for(int i=0;i<ourDate.length;i++)
-                {
-                    checkedData = ourDate[i].split("\\s");                    
-                    if(checkedData[0].equals(room.getNumber())){
-                        flag = true;
-                        break;
-                    }
-                    else{
-                        continue;
-                    }
-                }
-                if(flag){
-                    JOptionPane.showMessageDialog(null, "This Room Number Is Already Exist");
-                }
-                else{
-                    Room.add(Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), room.getStatus());
-                    setVisible(false);
-                    new Rooms().setVisible(true);
-                }
-                
-            }
+        if( room.getNumber().equals("") || room.getType().equals("") || room.getPrice().equals("") || room.getStatus().equals("")){
+            JOptionPane.showMessageDialog(null, "All Fields Are Required");
+        }
+        else{
+            Room.add(Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), room.getStatus());
+            setVisible(false);
+            new Rooms().setVisible(true); 
+        }
         
         
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // Edit
+        // Update
         Room room = new Room();
         room.setNumber(jTextField1.getText());
         room.setType(jComboBox1.getSelectedItem().toString());
@@ -270,39 +253,12 @@ public class Rooms extends javax.swing.JFrame {
         
         int selectedRow = jTable1.getSelectedRow();
         int checkedId = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
+
+        Room.update(checkedId, room.getType(), Float.parseFloat(room.getPrice()), room.getStatus());
+        JOptionPane.showMessageDialog(null, "Room Updated Successfully");
+        setVisible(false);
+        new Rooms().setVisible(true);
         
-        String[] ourDate, checkedData;
-        checkedData = null;
-        ourDate = Room.get();
-        if (checkedId == Integer.parseInt(room.getNumber()))
-        {
-            Room.update(checkedId, Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), room.getStatus());
-            JOptionPane.showMessageDialog(null, "Room Updated");
-            setVisible(false);
-            new Rooms().setVisible(true);
-        }
-        else
-        {
-            boolean flag = false;
-            for (int i = 0; i < ourDate.length; i++) {
-                checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(room.getNumber())) {
-                    flag = true;
-                    break;
-                } else {
-                    continue;
-                }
-            }
-            if (flag) {
-                JOptionPane.showMessageDialog(null, "This Room Number Is Already Exist");
-            }
-            else{
-                Room.update(checkedId, Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), room.getStatus());
-                JOptionPane.showMessageDialog(null, "Room Updated");
-                setVisible(false);
-                new Rooms().setVisible(true);
-            }  
-        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -311,7 +267,6 @@ public class Rooms extends javax.swing.JFrame {
             int selectedRow = jTable1.getSelectedRow();
             int id = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
             Room.delete(id);
-            JOptionPane.showMessageDialog(null, "Room Deleted");
             setVisible(false);
             new Rooms().setVisible(true);
         }
@@ -321,28 +276,19 @@ public class Rooms extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        jTextField1.setEditable(false);
         int index = jTable1.getSelectedRow();
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
-        ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File(Room.getRoomPath());
-        String info = "";       
+        ResultSet result = Databases.DatebaseActions.getDate("select * from room where id = " + checkedId + "");
         try{
-            Scanner in = new Scanner(file);
-            while (in.hasNext()){
-                ourDate.add(in.nextLine());
-            }
-            
-            String[] checkedDate = null;           
-            for(int i=0;i<ourDate.size();i++)
+            while(result.next())
             {
-                info = ourDate.get(i);
-                checkedDate = info.split("\\s");
-                if(Integer.parseInt(checkedDate[0]) == Integer.parseInt(checkedId)){
-                    jTextField1.setText(checkedDate[0]);
-                    jComboBox1.setSelectedItem(checkedDate[1]);
-                    jTextField2.setText(checkedDate[2]);
-                    jComboBox2.setSelectedItem(checkedDate[3]);
+                if(Integer.parseInt(result.getString(1)) == Integer.parseInt(checkedId)){
+                    jTextField1.setText(result.getString(1));
+                    jComboBox1.setSelectedItem(result.getString(2));
+                    jTextField2.setText(result.getString(3));
+                    jComboBox2.setSelectedItem(result.getString(4));
                 }                    
             }            
         }

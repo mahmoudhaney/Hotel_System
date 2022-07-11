@@ -209,32 +209,18 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1MouseExited
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // Login Process
         Receptionist receptionist = new Receptionist();
         receptionist.setEmail(jTextField1.getText());
         receptionist.setPassword(jPasswordField1.getText());
         
-        int check = 0;
         if (receptionist.getEmail().equals("") || receptionist.getPassword().equals("")){
-            check = 1;
             JOptionPane.showMessageDialog(null, "Email and Password Are Required");
         }
         else{
             try{
-                String[] ourDate, checkedData;
-                checkedData = null; ourDate = Receptionist.get();
-                boolean flag = false;
-                for(int i=0;i<ourDate.length;i++)
+                if(Receptionist.login(receptionist.getEmail(), receptionist.getPassword()))
                 {
-                    checkedData = ourDate[i].split("\\s");                    
-                    if(checkedData[2].equals(receptionist.getEmail()) && checkedData[3].equals(receptionist.getPassword())){
-                        flag = true;
-                        break;
-                    }
-                    else{
-                        continue;
-                    }
-                }
-                if(flag){
                     setVisible(false);
                     new HomePage().setVisible(true);
                 }

@@ -2,9 +2,7 @@ package OurPages;
 
 import OurClasses.Service;
 import java.awt.Color;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -20,14 +18,17 @@ public class Services extends javax.swing.JFrame {
      */
     public Services() {
         initComponents();
+        ResultSet result = Service.get();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
-        String[] ourDate, checkedData;
-        checkedData = null; ourDate = Service.get();
-        for(int i=0;i<ourDate.length;i++)
-        {
-            checkedData = ourDate[i].split("\\s");                    
-            Object row[] = {checkedData[0], checkedData[1], checkedData[2], checkedData[3]};
-            model.addRow(row);
+        try{
+            while(result.next())
+            {
+                model.addRow(new Object[]{result.getString(1),result.getString(2),result.getString(3),result.getString(4)});
+            }
+            result.close();
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
         }
     }
 
@@ -235,27 +236,10 @@ public class Services extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "All Fields Are Required");
         }
         else{
-            String[] ourDate, checkedData;
-            checkedData = null;
-            ourDate = Service.get();
-            boolean flag = false;
-            for (int i = 0; i < ourDate.length; i++) {
-                checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(service.getNumber())) {
-                    flag = true;
-                    break;
-                } else {
-                    continue;
-                }
-            }
-            if (flag) {
-                JOptionPane.showMessageDialog(null, "This Service Number Is Already Exist");
-            }
-            else{
-                Service.add(Integer.parseInt(service.getNumber()), service.getName(), Float.parseFloat(service.getPrice()), service.getStatus());
+            
+            Service.add(Integer.parseInt(service.getNumber()), service.getName(), Float.parseFloat(service.getPrice()), service.getStatus());
             setVisible(false);
-            new Services().setVisible(true);
-            }            
+            new Services().setVisible(true);           
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -270,38 +254,9 @@ public class Services extends javax.swing.JFrame {
         int selectedRow = jTable1.getSelectedRow();
         int checkedId = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
         
-        String[] ourDate, checkedData;
-        checkedData = null;
-        ourDate = Service.get();
-        if (checkedId == Integer.parseInt(service.getNumber()))
-        {
-            Service.update(checkedId, Integer.parseInt(service.getNumber()), service.getName(), Float.parseFloat(service.getPrice()), service.getStatus());
-            JOptionPane.showMessageDialog(null, "Sevice Updated");
-            setVisible(false);
-            new Services().setVisible(true);
-        }
-        else
-        {
-            boolean flag = false;
-            for (int i = 0; i < ourDate.length; i++) {
-                checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(service.getNumber())) {
-                    flag = true;
-                    break;
-                } else {
-                    continue;
-                }
-            }
-            if (flag) {
-                JOptionPane.showMessageDialog(null, "This Service Number Is Already Exist");
-            }
-            else{
-                Service.update(checkedId, Integer.parseInt(service.getNumber()), service.getName(), Float.parseFloat(service.getPrice()), service.getStatus());
-                JOptionPane.showMessageDialog(null, "Sevice Updated");
-                setVisible(false);
-                new Services().setVisible(true);
-            }
-        }
+        Service.update(checkedId, service.getName(), Float.parseFloat(service.getPrice()), service.getStatus());
+        setVisible(false);
+        new Services().setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -310,7 +265,6 @@ public class Services extends javax.swing.JFrame {
             int selectedRow = jTable1.getSelectedRow();
             int id = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
             Service.delete(id);
-            JOptionPane.showMessageDialog(null, "Service Deleted");
             setVisible(false);
             new Services().setVisible(true);
         }
@@ -320,28 +274,20 @@ public class Services extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        jTextField3.setEditable(false);
         int index = jTable1.getSelectedRow();
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
-        ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File(Service.getServicePath());
-        String info = "";       
+        ResultSet result = Databases.DatebaseActions.getDate("select * from service where id = " + checkedId + "");      
         try{
-            Scanner in = new Scanner(file);
-            while (in.hasNext()){
-                ourDate.add(in.nextLine());
-            }
-            
-            String[] checkedDate = null;           
-            for(int i=0;i<ourDate.size();i++)
+                      
+            while(result.next())
             {
-                info = ourDate.get(i);
-                checkedDate = info.split("\\s");
-                if(Integer.parseInt(checkedDate[0]) == Integer.parseInt(checkedId)){
-                    jTextField3.setText(checkedDate[0]);
-                    jTextField1.setText(checkedDate[1]);
-                    jTextField2.setText(checkedDate[2]);
-                    jComboBox1.setSelectedItem(checkedDate[3]);
+                if(Integer.parseInt(result.getString(1)) == Integer.parseInt(checkedId)){
+                    jTextField3.setText(result.getString(1));
+                    jTextField1.setText(result.getString(2));
+                    jTextField2.setText(result.getString(3));
+                    jComboBox1.setSelectedItem(result.getString(4));
                 }                    
             }            
         }

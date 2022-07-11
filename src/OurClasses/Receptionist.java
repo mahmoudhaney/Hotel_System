@@ -1,8 +1,10 @@
 package OurClasses;
 
+import Databases.DatebaseActions;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
@@ -54,31 +56,29 @@ public class Receptionist {
     // ==================File Methods======================================
     public static void add(String name, String email, String password, String Address){ //For Receptionist
         try{
-            FileWriter file = new FileWriter(ReceptionistPath, true);
-            file.write(name + " " + email + " " + password + " " + Address + "\n");
-            file.close();
-            JOptionPane.showMessageDialog(null, "User Added Successfully, Now You Can Login");
+            String Query = "insert into receptionist values('"+name+"','"+email+"','"+password+"','"+Address+"')";
+            DatebaseActions.setData(Query, "Registered Successfully, Now you Need to Login");
         }
         catch(Exception e){
             JOptionPane.showMessageDialog(null, e);
         }       
     }
     
-    public static String[] get(){
-        ArrayList<String> data = new ArrayList<String>();
-        String[] info = null;
-        File file = new File(ReceptionistPath);
+    public static boolean login(String email, String password){
         try{
-            Scanner in = new Scanner(file);
-            while(in.hasNext()){
-                data.add(in.nextLine());
+            String Query = "select * from receptionist where email = '"+email+"' and password = '"+password+"'";
+            ResultSet rs = Databases.DatebaseActions.getDate(Query);
+            if(rs.next())
+            {
+                return true;
             }
-            info = data.toArray(new String[0]);
+            else
+                return false;
         }
         catch(Exception e){
             JOptionPane.showMessageDialog(null, e);
-        }
-        return info;
+            return false;
+        }   
     }
     
     

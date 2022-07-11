@@ -3,11 +3,6 @@ import OurClasses.Receptionist;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
 /**
  *
  * @author Mahmoud Haney
@@ -255,7 +250,6 @@ public class FirstPage extends javax.swing.JFrame {
         if (receptionist.getName().equals("") || receptionist.getEmail().equals("") || receptionist.getPassword().equals("") || receptionist.getAddress().equals("")){
             JOptionPane.showMessageDialog(null, "All Fields Are Required");
         }
-            
         else{          
             Receptionist.add(receptionist.getName(), receptionist.getEmail(), receptionist.getPassword(), receptionist.getAddress());
             setVisible(false);

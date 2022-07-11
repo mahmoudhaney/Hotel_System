@@ -1,28 +1,26 @@
 package OurPages;
 import OurClasses.Employee;
 import java.awt.Color;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 public class Employees extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Employees
-     */
     public Employees() {
         initComponents();
+        ResultSet result = Employee.get();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
-        String[] ourDate, checkedData;
-        checkedData = null; ourDate = Employee.get();
-        for(int i=0;i<ourDate.length;i++)
-        {
-            checkedData = ourDate[i].split("\\s");                    
-            Object row[] = {checkedData[0], checkedData[1], checkedData[2], checkedData[3], checkedData[4]};
-            model.addRow(row);
+        try{
+            while(result.next())
+            {
+                model.addRow(new Object[]{result.getString(1),result.getString(2),result.getString(3),result.getString(4),result.getString(5)});
+            }
+            result.close();
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
         }
     }
 
@@ -241,28 +239,9 @@ public class Employees extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "All Fields Are Required");
         }
         else{
-            String[] ourDate, checkedData;
-            checkedData = null;
-            ourDate = Employee.get();
-            boolean flag = false;
-            for (int i = 0; i < ourDate.length; i++) {
-                checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(employee.getId())) {
-                    flag = true;
-                    break;
-                } else {
-                    continue;
-                }
-            }
-            if (flag) {
-                JOptionPane.showMessageDialog(null, "This Employee ID Is Already Exist");
-            }
-            else{
-                Employee.add(Integer.parseInt(employee.getId()), employee.getName(), employee.getEmail(), employee.getDepartment(), Double.parseDouble(employee.getSalary()));
-                setVisible(false);
-                new Employees().setVisible(true);
-            }
-            
+            Employee.add(Integer.parseInt(employee.getId()), employee.getName(), employee.getEmail(), employee.getDepartment(), Double.parseDouble(employee.getSalary()));
+            setVisible(false);
+            new Employees().setVisible(true);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -272,7 +251,6 @@ public class Employees extends javax.swing.JFrame {
             int selectedRow = jTable1.getSelectedRow();
             int id = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
             Employee.delete(id);
-            JOptionPane.showMessageDialog(null, "Employee Deleted");
             setVisible(false);
             new Employees().setVisible(true);
         }
@@ -292,71 +270,30 @@ public class Employees extends javax.swing.JFrame {
         
         int selectedRow = jTable1.getSelectedRow();
         int checkedId = Integer.parseInt(jTable1.getModel().getValueAt(selectedRow, 0).toString());
-        
-        String[] ourDate, checkedData;
-        checkedData = null;
-        ourDate = Employee.get();
-        // To make the id without any changes
-        if (checkedId == Integer.parseInt(employee.getId()))
-        {
-            Employee.update(checkedId, Integer.parseInt(employee.getId()), employee.getName(), employee.getEmail(), employee.getDepartment(), Double.parseDouble(employee.getSalary()) );
-            JOptionPane.showMessageDialog(null, "Employee Updated");
-            setVisible(false);
-            new Employees().setVisible(true);
-        }
-        else
-        {
-            //To check if the new id exsit or not
-            boolean flag = false;
-            for (int i = 0; i < ourDate.length; i++) {
-                checkedData = ourDate[i].split("\\s");
-                if (checkedData[0].equals(employee.getId())) {
-                    flag = true;
-                    break;
-                } else {
-                    continue;
-                }
-            }
-            if (flag) {
-                JOptionPane.showMessageDialog(null, "This Employee ID Is Already Exist");
-            }
-            else{
-                Employee.update(checkedId, Integer.parseInt(employee.getId()), employee.getName(), employee.getEmail(), employee.getDepartment(), Double.parseDouble(employee.getSalary()) );
-                JOptionPane.showMessageDialog(null, "Employee Updated");
-                setVisible(false);
-                new Employees().setVisible(true);
-            }
-        }
-        
+        Employee.update(checkedId, employee.getName(), employee.getEmail(), employee.getDepartment(), Double.parseDouble(employee.getSalary()) );
+        setVisible(false);
+        new Employees().setVisible(true);
         
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        //Fill fields that I've choosen from the table
+        jTextField1.setEditable(false); //To make id without changes
         int index = jTable1.getSelectedRow();
         TableModel model = jTable1.getModel();
         String checkedId = model.getValueAt(index, 0).toString();
-        ArrayList<String> ourDate = new ArrayList<String>();
-        File file = new File(Employee.getEmployeePath());
-        String info = "";       
+        ResultSet result = Databases.DatebaseActions.getDate("select * from employee where id = " + checkedId + "");
         try{
-            Scanner in = new Scanner(file);
-            while (in.hasNext()){
-                ourDate.add(in.nextLine());
-            }
-            
-            String[] checkedDate = null;           
-            for(int i=0;i<ourDate.size();i++)
+            while (result.next())
             {
-                info = ourDate.get(i);
-                checkedDate = info.split("\\s");
-                if(Integer.parseInt(checkedDate[0]) == Integer.parseInt(checkedId)){
-                    jTextField1.setText(checkedDate[0]);
-                    jTextField2.setText(checkedDate[1]);
-                    jTextField3.setText(checkedDate[2]);                   
-                    jComboBox1.setSelectedItem(checkedDate[3]);
-                    jTextField4.setText(checkedDate[4]);
-                }                    
-            }            
+                if(Integer.parseInt(result.getString(1)) == Integer.parseInt(checkedId)){
+                    jTextField1.setText(result.getString(1));
+                    jTextField2.setText(result.getString(2));
+                    jTextField3.setText(result.getString(3));                   
+                    jComboBox1.setSelectedItem(result.getString(4));
+                    jTextField4.setText(result.getString(5));
+                }
+            }
         }
         catch(Exception e){
             JOptionPane.showMessageDialog(null, e);

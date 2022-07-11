@@ -2,29 +2,18 @@ package OurPages;
 import OurClasses.Guest;
 import OurClasses.Room;
 import java.awt.Color;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.swing.JOptionPane;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author Mahmoud Haney
- */
 public class CheckIn extends javax.swing.JFrame {
 
-    /**
-     * Creates new form CheckIn
-     */
     public CheckIn() {
         initComponents();
         jTextField4.setEditable(false);
         jTextField5.setEditable(false);
-        SimpleDateFormat myformat = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat myformat = new SimpleDateFormat("yyyy-MM-dd");
         Calendar cal = Calendar.getInstance();
         jTextField4.setText(myformat.format(cal.getTime()));
     }
@@ -35,15 +24,12 @@ public class CheckIn extends javax.swing.JFrame {
         jComboBox3.removeAllItems();
         jTextField5.setText("");
         room.setType(jComboBox2.getSelectedItem().toString());
-        //roomType = (String) jComboBox2.getSelectedItem();
+        ResultSet result = Room.get();
         try{
-            String[] ourDate, checkedData;
-            checkedData = null; ourDate = Room.get();
-            for(int i=0;i<ourDate.length;i++)
+            while(result.next())
             {
-                checkedData = ourDate[i].split("\\s");
-                if(checkedData[1].equals(room.getType()) && checkedData[3].equals("Not-Booked")){
-                    jComboBox3.addItem(checkedData[0]);
+                if(result.getString(2).equals(room.getType()) && result.getString(4).equals("Not-Booked")){
+                    jComboBox3.addItem(result.getString(1));
                 }
             }
         }
@@ -238,21 +224,11 @@ public class CheckIn extends javax.swing.JFrame {
         }
         else{
             if(!room.getPrice().equals("")){
-                String[] ourDate, checkedData;
-                checkedData = null; ourDate = Room.get();
-                for(int i=0;i<ourDate.length;i++)
-                {
-                    checkedData = ourDate[i].split("\\s");
-                    if(checkedData[0].equals(room.getNumber())){
-                        
-                        Room.update(Integer.parseInt(room.getNumber()), Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), "Booked");
-                        //checkedData[3] = "Booked";//????????????????????????????????????????
-                    }
-                }
-                Guest.add(guest.getName(), guest.getMobile(), guest.getGender(), guest.getIdproof(), guest.getCheckInDate(), room.getType(), Integer.parseInt(room.getNumber()), Float.parseFloat(room.getPrice()));
-                setVisible(false);
-                new CheckIn().setVisible(true);
-            }           
+                Room.update(Integer.parseInt(room.getNumber()), room.getType(), Float.parseFloat(room.getPrice()), "Booked");
+            }
+            Guest.add(guest.getName(), guest.getMobile(), guest.getGender(), guest.getIdproof(), guest.getCheckInDate(), room.getType(), Integer.parseInt(room.getNumber()), Float.parseFloat(room.getPrice()));
+            setVisible(false);
+            new CheckIn().setVisible(true);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -290,15 +266,14 @@ public class CheckIn extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBox2ActionPerformed
 
     private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
+        // To get the price of room chosen
         room.setNumber((String) jComboBox3.getSelectedItem());
         try{
-            String[] ourDate, checkedData;
-            checkedData = null; ourDate = Room.get();
-            for(int i=0;i<ourDate.length;i++)
+            ResultSet result = Room.get();
+            while(result.next())
             {
-                checkedData = ourDate[i].split("\\s");
-                if(checkedData[0].equals(room.getNumber())){
-                    jTextField5.setText(checkedData[2]);
+                if(result.getString(1).equals(room.getNumber())){
+                    jTextField5.setText(result.getString(3));
                 }
             }
         }

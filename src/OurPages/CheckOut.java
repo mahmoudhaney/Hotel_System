@@ -1,4 +1,5 @@
 package OurPages;
+import OurClasses.Employee;
 import OurClasses.Guest;
 import OurClasses.Room;
 import com.itextpdf.text.Paragraph;
@@ -7,6 +8,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.swing.JOptionPane;
@@ -16,14 +18,17 @@ public class CheckOut extends javax.swing.JFrame {
 
     public CheckOut() {
         initComponents();
+        ResultSet result = Guest.get();
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
-        String[] ourDate, checkedData;
-        checkedData = null; ourDate = Guest.get();
-        for(int i=0;i<ourDate.length;i++)
-        {
-            checkedData = ourDate[i].split("\\s");                    
-            Object row[] = {checkedData[0], checkedData[1], checkedData[2], checkedData[3], checkedData[4], checkedData[5], checkedData[6], checkedData[7]};
-            model.addRow(row);
+        try{
+            while(result.next())
+            {
+                model.addRow(new Object[]{result.getString(1),result.getString(2),result.getString(3),result.getString(4),result.getString(5),result.getString(6),result.getString(7),result.getString(8)});
+            }
+            result.close();
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
         }
         jTextField2.setEditable(false);
         jTextField3.setEditable(false);
@@ -251,22 +256,21 @@ public class CheckOut extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4MouseExited
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // Get the guest room
         String checkoutRoomNumber = jTextField1.getText();
         try{
-            String[] ourDate, checkedData;
-            checkedData = null; ourDate = Guest.get();
-            for(int i=0;i<ourDate.length;i++)
+            ResultSet result = Guest.get();
+            while(result.next())
             {
-                checkedData = ourDate[i].split("\\s");
-                if(checkedData[6].equals(checkoutRoomNumber)){
+                if(result.getString(7).equals(checkoutRoomNumber)){
                     jTextField1.setEditable(false);
                     //To fill Name, price, and check-in date
-                    jTextField2.setText(checkedData[0]);
-                    jTextField3.setText(checkedData[7]);
-                    jTextField4.setText(checkedData[4]);
+                    jTextField2.setText(result.getString(1));
+                    jTextField3.setText(result.getString(8));
+                    jTextField4.setText(result.getString(5));
                     
                     //To fill check-out date
-                    SimpleDateFormat myformat = new SimpleDateFormat("yyyy/MM/dd");
+                    SimpleDateFormat myformat = new SimpleDateFormat("yyyy-MM-dd");
                     Calendar cal = Calendar.getInstance();
                     jTextField6.setText(myformat.format(cal.getTime()));
                     
@@ -285,7 +289,7 @@ public class CheckOut extends javax.swing.JFrame {
                     float price = Float.parseFloat(jTextField3.getText());
                     jTextField7.setText(String.valueOf(noOfDayStay*price));
                     
-                    roomType = checkedData[5];                    
+                    roomType = result.getString(6);                    
                 }                
             }
         }
@@ -309,16 +313,8 @@ public class CheckOut extends javax.swing.JFrame {
         roomNumber = jTextField1.getText();
         
         //To change the status of the room to Not Booked anymore
-        String[] ourDate, checkedData;
-        checkedData = null; ourDate = Room.get();
-        for(int i=0;i<ourDate.length;i++)
-        {
-            checkedData = ourDate[i].split("\\s");
-            if(checkedData[0].equals(roomNumber)){//ggggggg
-                Room.update(Integer.parseInt(roomNumber), Integer.parseInt(roomNumber), roomType, Float.parseFloat(price), "Not-Booked");
-            }
-        }
-        
+        Room.update(Integer.parseInt(roomNumber), roomType, Float.parseFloat(price), "Not-Booked");
+        // Delete the Guest
         Guest.delete(Integer.parseInt(roomNumber));
         
         //=====To Print A Pdf with the details of the leaving guest=======
@@ -332,10 +328,10 @@ public class CheckOut extends javax.swing.JFrame {
             doc.add(paragraph1);
             Paragraph paragraph2 = new Paragraph("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n");
             doc.add(paragraph2);
-            Paragraph paragraph3 = new Paragraph("\tCustomer Bill Name: " + name + "\nCustomer Details:\nName: "+ name + "\nPrice Per Night: "+ price + "\n");
+            Paragraph paragraph3 = new Paragraph("\tCustomer Bill Name: " + name + "\nGuest Name: "+ name + "\n");
             doc.add(paragraph3);
             doc.add(paragraph2);
-            Paragraph paragraph4 = new Paragraph("Room Details:\nNumber: "+ jTextField1.getText() + "\nType: "+ roomType+ "\nPrice Per Night: " + jTextField3.getText()+"\n");
+            Paragraph paragraph4 = new Paragraph("\nRoom Number: "+ jTextField1.getText() + "\nRoom Type: "+ roomType+ "\nPrice Per Night: " + jTextField3.getText()+"\n");
             doc.add(paragraph4);
             doc.add(paragraph2);
             Paragraph paragraph6 = new Paragraph("\n");
